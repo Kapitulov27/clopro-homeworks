@@ -1,0 +1,12 @@
+# Секретный ключ сервисного аккаунта
+authorized_key.json
+
+# Файлы с секретными переменными (токены, ID облака)
+*.tfvars
+*.tfvars.json
+
+# Служебные файлы самого Terraform (пароли и кэш провайдеров)
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup

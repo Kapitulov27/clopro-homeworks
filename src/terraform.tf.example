@@ -1,0 +1,6 @@
+yc_cloud_id      = "b1g..."
+yc_folder_id     = "b1g..."
+yc_zone          = "ru-central1-a"
+ssh_public_key   = "ssh-ed25519 AAAAC3..."
+yc_nat_image_id  = "fd80mrhj8fl2oe87o4e1"
+yc_ubuntu_family = "ubuntu-2404-lts"
