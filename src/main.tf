@@ -92,12 +92,12 @@ resource "yandex_vpc_route_table" "private_rt" {
   }
 }
 
-resource "yandex_vpc_address" "nat_ip" {
-  name = "nat-instance-ip"
-  external_ipv4_address {
-    zone_id = var.yc_zone
-  }
-}
+#resource "yandex_vpc_address" "nat_ip" {
+#  name = "nat-instance-ip"
+#  external_ipv4_address {
+#    zone_id = var.yc_zone
+#  }
+#}
 
 
 resource "yandex_compute_instance" "nat_instance" {
@@ -119,8 +119,8 @@ resource "yandex_compute_instance" "nat_instance" {
   network_interface {
     subnet_id  = yandex_vpc_subnet.public_subnet.id
     ip_address = "192.168.10.254"
-    nat        = true
-    nat_ip_address = yandex_vpc_address.nat_ip.external_ipv4_address[0].address 
+    nat        = false
+  #  nat_ip_address = yandex_vpc_address.nat_ip.external_ipv4_address[0].address 
   }
 
   metadata = {
@@ -128,6 +128,12 @@ resource "yandex_compute_instance" "nat_instance" {
   }
 }
 
+
+resource "yandex_kms_symmetric_key" "bucket_key" {
+  name              = "omp-bucket-key"
+  description       = "Ключ KMS для шифрования бакета"
+  default_algorithm = "AES_256"
+}
 
 resource "yandex_storage_bucket" "lamp_bucket" {
   access_key = var.storage_access_key
@@ -138,7 +144,17 @@ resource "yandex_storage_bucket" "lamp_bucket" {
     read = true
     list = false
   }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = yandex_kms_symmetric_key.bucket_key.id
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
 }
+
 
 resource "yandex_storage_object" "picture" {
   access_key = var.storage_access_key
